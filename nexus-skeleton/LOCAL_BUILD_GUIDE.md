@@ -303,7 +303,7 @@ npx expo prebuild --clean
 
 ### **EAS Local Build**
 ```
-Output APK: 
+Output APK:
 /Users/[username]/Documents/personal-projects/exp-expo-build-issue/nexus-skeleton/build-[timestamp].apk
 ```
 

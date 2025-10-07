@@ -7,14 +7,66 @@ This document outlines the step-by-step process to create a React Native Expo sk
 3. Create a reusable template for future projects
 4. Document working configurations and solutions
 
+## ⚠️ Important Version Requirements
+
+This guide is designed for:
+- **Node.js 21.x** ← Required
+- **Expo SDK 54** ← Latest stable
+
+Using different versions may cause compatibility issues. Always verify your environment before starting!
+
+## Libraries Included
+
+| Library | Purpose | Phase | Native? |
+|---------|---------|-------|---------|
+| expo-router | File-based navigation with TypeScript routes | 2 | Yes |
+| @tanstack/react-query | Server state management & data fetching | 3 | No |
+| zustand | Client state management | 3 | No |
+| react-native-mmkv | Fast key-value storage | 4 | Yes |
+| @shopify/flash-list | High-performance lists | 5 | Yes |
+| expo-image | Optimized image component with blurhash | 6 | Yes |
+| react-native-vision-camera | Advanced camera functionality | 7 | Yes |
+| expo-contacts | Contact access & management | 7 | Yes |
+| expo-file-system | File operations & storage | 7 | Yes |
+| expo-document-picker | Document selection from device | 7 | Yes |
+| xlsx | Excel file generation & parsing | 8 | No |
+| pdf-lib | PDF generation & manipulation | 8 | No |
+| expo-sharing | Native file sharing dialog | 8 | Yes |
+
+**Additional Required Packages:**
+- react-native-get-random-values (polyfill for pdf-lib)
+- @craftzdog/react-native-buffer (polyfill for pdf-lib)
+- react-native-safe-area-context (for expo-router)
+- react-native-screens (for expo-router)
+
+**Total Libraries**: 13 main + 6 supporting = **19 packages**
+
 ## Prerequisites
-- Node.js >= 18.x
-- npm or yarn
-- Xcode (for iOS builds) - Latest stable version
+- **Node.js 21.x** (Recommended for Expo SDK 54)
+- npm or yarn (latest version)
+- **Expo SDK 54** (Latest stable)
+- Xcode (for iOS builds) - Latest stable version (15.x or higher)
 - Android Studio (for Android builds) - Latest stable version
-- EAS CLI: `npm install -g eas-cli`
-- Expo CLI: `npm install -g expo-cli`
+- EAS CLI: `npm install -g eas-cli@latest`
+- Expo CLI: `npm install -g expo-cli@latest`
 - EAS account (sign up at expo.dev)
+
+**Version Requirements:**
+```bash
+# Check your versions
+node --version  # Should be v21.x.x
+npm --version   # Should be 10.x.x or higher
+expo --version # Should be 54.x.x
+```
+
+**Install/Update Node.js 21:**
+- Using nvm: `nvm install 21 && nvm use 21`
+- Or download from: https://nodejs.org/
+
+**Install/Update Expo CLI:**
+```bash
+npm install -g expo-cli@latest eas-cli@latest
+```
 
 ## Phase 1: Initial Project Setup
 
@@ -480,6 +532,13 @@ git add .
 git commit -m "Add FlashList"
 ```
 
+**Alternative: LegendList**
+If you prefer LegendList (another high-performance list library), you can use it instead:
+```bash
+npm install @legendapp/list
+```
+Both FlashList and LegendList offer significant performance improvements over FlatList. FlashList is maintained by Shopify and is more widely adopted. Choose based on your project needs.
+
 **Create: components/ExampleList.tsx**
 ```typescript
 import { FlashList } from '@shopify/flash-list';
@@ -817,6 +876,17 @@ git add .
 git commit -m "Add pdf-lib and polyfills"
 ```
 
+### Step 18.5: Install expo-sharing (for file sharing)
+```bash
+npx expo install expo-sharing
+
+# Commit
+git add .
+git commit -m "Add expo-sharing for file exports"
+```
+
+**Note**: expo-sharing allows users to share generated files (Excel, PDF, etc.) through the native share dialog.
+
 **Create: utils/pdf.ts**
 ```typescript
 import 'react-native-get-random-values';
@@ -1029,6 +1099,13 @@ export default function TestScreen() {
     try {
       const uri = await pdfUtils.createPdf('Test PDF Content', 'test.pdf');
       addResult(`✅ PDF: Created at ${uri}`);
+
+      // Try to share the file if available
+      const Sharing = require('expo-sharing');
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri);
+        addResult(`✅ PDF: Shared successfully`);
+      }
     } catch (error) {
       addResult(`❌ PDF: ${error}`);
     }
@@ -1042,6 +1119,13 @@ export default function TestScreen() {
       ];
       const uri = await excelUtils.createExcelFile(data, 'test.xlsx');
       addResult(`✅ Excel: Created at ${uri}`);
+
+      // Try to share the file if available
+      const Sharing = require('expo-sharing');
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri);
+        addResult(`✅ Excel: Shared successfully`);
+      }
     } catch (error) {
       addResult(`❌ Excel: ${error}`);
     }
