@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 
 export type TestStatus = 'pending' | 'running' | 'passed' | 'failed' | 'skipped';
