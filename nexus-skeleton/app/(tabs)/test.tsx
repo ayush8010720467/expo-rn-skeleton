@@ -36,7 +36,7 @@ import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Svg, { Circle, Rect, Path, Text as SvgText } from 'react-native-svg';
 import { v4 as uuidv4 } from 'uuid';
 import { uuidv7 } from 'uuidv7';
-import { initializeSampleDatabase } from '../../utils/sqlite';
+import { initializeSampleDatabase, sqliteUtils } from '../../utils/sqlite';
 import { excelUtils } from '../../utils/excel';
 import { pdfUtils } from '../../utils/pdf';
 import { testLogger } from '../../utils/testLogger';
@@ -213,10 +213,39 @@ export default function TestScreen() {
   const testSQLite = async () => {
     try {
       testLogger.startTest('sqlite');
+
+      // Get initial database info
+      const dbInfo = sqliteUtils.getDatabaseInfo();
+      console.log('📊 SQLite Test - Initial DB Info:', dbInfo);
+
+      // Initialize database
       await initializeSampleDatabase();
-      addResult('SQLite: Database initialized and tested', 'success');
-      testLogger.passTest('sqlite', 'CRUD operations working');
+
+      // Insert test data
+      const userId = await sqliteUtils.insert('users', {
+        name: 'Test User',
+        email: 'test@example.com',
+      });
+      console.log('📊 SQLite Test - Inserted user with ID:', userId);
+
+      // Query test data
+      const users = await sqliteUtils.query('SELECT * FROM users');
+      console.log('📊 SQLite Test - Query result:', users);
+
+      // Get database statistics
+      const stats = await sqliteUtils.getDatabaseStats();
+      console.log('📊 SQLite Test - Database Stats:', stats);
+
+      addResult(
+        `SQLite: ✓ Database initialized, ${stats.totalTables} table(s), ${stats.tableCounts.users || 0} user(s)`,
+        'success'
+      );
+      testLogger.passTest(
+        'sqlite',
+        `DB: ${stats.dbName}, Tables: ${stats.totalTables}, Rows: ${JSON.stringify(stats.tableCounts)}`
+      );
     } catch (error) {
+      console.error('❌ SQLite Test Failed:', error);
       addResult(`SQLite: ${error}`, 'error');
       testLogger.failTest('sqlite', String(error));
     }

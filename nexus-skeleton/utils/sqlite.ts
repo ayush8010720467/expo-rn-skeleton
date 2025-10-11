@@ -23,6 +23,7 @@ export const sqliteUtils = {
   async openDatabase() {
     try {
       if (dbInstance.db) {
+        console.log('📊 Using existing database connection');
         return dbInstance.db;
       }
 
@@ -31,10 +32,14 @@ export const sqliteUtils = {
         location: 'default',
       });
 
-      console.log('Database opened successfully');
+      console.log('📊 Database opened successfully:', {
+        name: DB_NAME,
+        location: 'default',
+        isOpen: true,
+      });
       return dbInstance.db;
     } catch (error) {
-      console.error('Error opening database:', error);
+      console.error('❌ Error opening database:', error);
       throw error;
     }
   },
@@ -180,6 +185,60 @@ export const sqliteUtils = {
       return result;
     } catch (error) {
       console.error('Error executing SQL:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get database instance info for testing/debugging
+   */
+  getDatabaseInfo() {
+    return {
+      name: DB_NAME,
+      location: 'default',
+      isConnected: dbInstance.db !== null,
+      instance: dbInstance.db ? 'Active' : 'Not initialized',
+    };
+  },
+
+  /**
+   * Get database statistics for testing
+   */
+  async getDatabaseStats() {
+    try {
+      const db = await this.openDatabase();
+
+      // Get all tables
+      const tables = await db.executeSql(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
+        []
+      );
+
+      const tableNames: string[] = [];
+      for (let i = 0; i < tables[0].rows.length; i++) {
+        tableNames.push(tables[0].rows.item(i).name);
+      }
+
+      // Get row counts for each table
+      const tableCounts: Record<string, number> = {};
+      for (const tableName of tableNames) {
+        const countResult = await db.executeSql(
+          `SELECT COUNT(*) as count FROM ${tableName}`,
+          []
+        );
+        tableCounts[tableName] = countResult[0].rows.item(0).count;
+      }
+
+      return {
+        dbName: DB_NAME,
+        location: 'default',
+        isConnected: true,
+        totalTables: tableNames.length,
+        tables: tableNames,
+        tableCounts,
+      };
+    } catch (error) {
+      console.error('Error getting database stats:', error);
       throw error;
     }
   },
