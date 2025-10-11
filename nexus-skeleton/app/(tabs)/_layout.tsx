@@ -3,7 +3,15 @@ import { Text } from 'react-native';
 
 export default function TabLayout() {
   return (
-    <Tabs>
+    <Tabs screenOptions={{
+      tabBarActiveTintColor: '#007AFF',
+      tabBarInactiveTintColor: '#8E8E93',
+      tabBarStyle: {
+        backgroundColor: '#FFFFFF',
+        borderTopWidth: 1,
+        borderTopColor: '#E5E5EA',
+      },
+    }}>
       <Tabs.Screen
         name="home"
         options={{
@@ -16,6 +24,27 @@ export default function TabLayout() {
         options={{
           title: 'Tests',
           tabBarIcon: ({ color }) => <Text style={{ color }}>🧪</Text>,
+        }}
+      />
+      <Tabs.Screen
+        name="gestures"
+        options={{
+          title: 'Gestures',
+          tabBarIcon: ({ color }) => <Text style={{ color }}>👋</Text>,
+        }}
+      />
+      <Tabs.Screen
+        name="camera"
+        options={{
+          title: 'Camera',
+          tabBarIcon: ({ color }) => <Text style={{ color }}>📷</Text>,
+        }}
+      />
+      <Tabs.Screen
+        name="theme-demo"
+        options={{
+          title: 'Theme',
+          tabBarIcon: ({ color }) => <Text style={{ color }}>🎨</Text>,
         }}
       />
       <Tabs.Screen

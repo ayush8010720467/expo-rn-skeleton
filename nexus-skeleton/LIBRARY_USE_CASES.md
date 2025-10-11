@@ -338,7 +338,7 @@ const takePhoto = async () => {
 ```typescript
 const pickContact = async () => {
   const { status } = await Contacts.requestPermissionsAsync();
-  
+
   if (status === 'granted') {
     const { data } = await Contacts.getContactsAsync({
       fields: [
@@ -375,7 +375,7 @@ const downloadFile = async (url: string) => {
     FileSystem.documentDirectory + 'download.pdf',
     {},
     (downloadProgress) => {
-      const progress = downloadProgress.totalBytesWritten / 
+      const progress = downloadProgress.totalBytesWritten /
                       downloadProgress.totalBytesExpectedToWrite;
       console.log('Progress:', Math.round(progress * 100) + '%');
     }
@@ -530,7 +530,7 @@ const selectionFeedback = () => {
 <Svg width="200" height="200" viewBox="0 0 200 200">
   {/* Circle */}
   <Circle cx="100" cy="100" r="50" fill="blue" />
-  
+
   {/* Path */}
   <Path
     d="M100 20 L120 80 L180 80 L130 120 L150 180 L100 140 L50 180 L70 120 L20 80 L80 80 Z"
@@ -538,7 +538,7 @@ const selectionFeedback = () => {
     stroke="orange"
     strokeWidth="2"
   />
-  
+
   {/* Text */}
   <SvgText
     x="100"
@@ -816,7 +816,7 @@ useEffect(() => {
   const unsubscribe = NetInfo.addEventListener(state => {
     console.log('Connection type', state.type);
     console.log('Is connected?', state.isConnected);
-    
+
     if (!state.isConnected) {
       // Switch to offline mode
       showOfflineMessage();
